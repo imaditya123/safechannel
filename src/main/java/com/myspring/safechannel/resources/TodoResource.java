@@ -1,5 +1,6 @@
 package com.myspring.safechannel.resources;
 
+
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
@@ -17,16 +18,19 @@ public class TodoResource {
 
 	
 	@GetMapping("/v1/hello")
-	public String helloworld() {
-		return "Hello World";
+	public RResponse helloworld() {
+		return new RResponse("Hello World","Aditya!");
 	}
 	
 	@PostMapping("/v1/hello")
-	public String posthello(@RequestBody Map body) {
+	public RResponse posthello(@RequestBody Map body) {
 		logger.info("Hello post API{}",body.toString());
-		return "Hello World";
+		return new RResponse("Hello World","Aditya!");
 	}
 	
 	
 
 }
+
+
+record RResponse(String str,String str1) {}

@@ -36,12 +36,6 @@ public class AuthController {
 		this.jwtDecoder = jwtDecoder;
 		this.dataSource=dataSource;
 	}
-	
-	@GetMapping("/auth/login")
-	public String authenticateA() {
-		return "AUTH LOGIN";
-	}
-	
 
 	@PostMapping("/auth/login")
 	public JwtRespose authenticate(@RequestBody UserRequestModel userRequestModel) {
@@ -60,7 +54,6 @@ public class AuthController {
 		
 		return new JwtRespose(createToken(userRequestModel));
 		
-		 
 	}
 	
 
