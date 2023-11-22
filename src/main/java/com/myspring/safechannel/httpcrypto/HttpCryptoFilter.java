@@ -1,8 +1,8 @@
-package com.myspring.safechannel.securityConfiguration;
+package com.myspring.safechannel.httpcrypto;
 
 import java.io.IOException;
-
 import java.nio.charset.StandardCharsets;
+
 
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -19,9 +19,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.myspring.safechannel.securityConfiguration.utils.HttpServletRequestWritableWrapper;
-import com.myspring.safechannel.securityConfiguration.utils.HttpServletResponseWritableWrapper;
-import com.myspring.safechannel.securityConfiguration.utils.ResponseJSON;
+
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -30,28 +28,34 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
+
+
+import jakarta.servlet.http.HttpServletResponse;
+
 
 @Component
 @Slf4j
-public class HttpRequestsInterceptor implements Filter {
+public class HttpCryptoFilter implements Filter {
 	
-	private final Logger logger= LoggerFactory.getLogger(HttpRequestsInterceptor.class);
+	private final Logger logger= LoggerFactory.getLogger(HttpCryptoFilter.class);
 
 	@Autowired
-	private EncryptDecrypt payloadEncryptDecrypt;
+	private EncryptionService encryptionService;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		String requestData = null;
 		String decodeData = null;
+		
 
 		ServletInputStream inputStream = null;
 
 		if (((HttpServletRequest) request).getRequestURL().toString().contains("/updatePicture")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/uploadAttachment")
+				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api/v1/auth/")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("swagger")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/csrf")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api-docs")) {
@@ -59,28 +63,24 @@ public class HttpRequestsInterceptor implements Filter {
 			return;
 		}
 		
-//		Uncomment this for testing for not encrypted data
-//		chain.doFilter(request, response);
-//		return;
+
 
 
 		try {
 
 			inputStream = request.getInputStream();
 			requestData = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-//			log.info("reques data {}", requestData);
 			if (!Strings.isEmpty(requestData)) {
-				decodeData = payloadEncryptDecrypt.decrypt(requestData);
+				decodeData = encryptionService.decrypt(requestData);
 			}
-			HttpServletRequestWritableWrapper requestWrapper = null;
+			CustomHttpServletRequest requestWrapper = null;
 			if (!Strings.isEmpty(decodeData)) {
-//				log.info("decode data " + decodeData);
 				byte[] bytes = decodeData.getBytes(StandardCharsets.UTF_8);
 
-				requestWrapper = new HttpServletRequestWritableWrapper((HttpServletRequest) request, bytes);
+				requestWrapper = new CustomHttpServletRequest((HttpServletRequest) request, bytes);
 			}
 
-			HttpServletResponseWritableWrapper responseWrapper = new HttpServletResponseWritableWrapper(
+			CustomHttpServletResponse responseWrapper = new CustomHttpServletResponse(
 					(HttpServletResponse) response);
 
 			if (requestWrapper != null)
@@ -92,8 +92,8 @@ public class HttpRequestsInterceptor implements Filter {
 			logger.info("responseContent {}", responseContent);
 
 			if (responseContent.endsWith("]") || responseContent.endsWith("}")) {
-				String encrypt = payloadEncryptDecrypt.encrypt(responseContent);
-				String decrypt = payloadEncryptDecrypt.decrypt(encrypt);
+				String encrypt = encryptionService.encrypt(responseContent);
+				String decrypt = encryptionService.decrypt(encrypt);
 				logger.info("encrypted response", encrypt);
 				logger.info("Decrypted response", decrypt);
 				ResponseJSON ouput = new ResponseJSON(encrypt);

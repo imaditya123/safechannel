@@ -1,10 +1,7 @@
-package com.myspring.safechannel.securityConfiguration.utils;
-
+package com.myspring.safechannel.httpcrypto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-
 
 import org.springframework.http.HttpStatus;
 
@@ -12,13 +9,15 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 
-public class HttpServletResponseWritableWrapper extends HttpServletResponseWrapper {
+
+
+public class CustomHttpServletResponse  extends HttpServletResponseWrapper {
 
 	ByteArrayOutputStream output;
-	FilterServletOutputStream filterOutput;
+	CustomServletOutputStream filterOutput;
 	HttpStatus status = HttpStatus.OK;
 
-	public HttpServletResponseWritableWrapper(HttpServletResponse response) {
+	public CustomHttpServletResponse(HttpServletResponse response) {
 		super(response);
 		output = new ByteArrayOutputStream();
 	}
@@ -26,7 +25,7 @@ public class HttpServletResponseWritableWrapper extends HttpServletResponseWrapp
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
 		if (filterOutput == null) {
-			filterOutput = new FilterServletOutputStream(output);
+			filterOutput = new CustomServletOutputStream(output);
 		}
 		return filterOutput;
 	}

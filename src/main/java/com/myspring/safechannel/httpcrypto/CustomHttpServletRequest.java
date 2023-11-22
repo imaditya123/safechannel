@@ -1,28 +1,27 @@
-package com.myspring.safechannel.securityConfiguration.utils;
+package com.myspring.safechannel.httpcrypto;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
-import ch.qos.logback.classic.Logger;
-import jakarta.servlet.ReadListener;
-import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 
-public class HttpServletRequestWritableWrapper extends HttpServletRequestWrapper{
+
+
+public class CustomHttpServletRequest extends HttpServletRequestWrapper{
 	
-	   private static final Logger logger = (Logger) LoggerFactory.getLogger(HttpServletRequestWritableWrapper.class);
+	   private static final Logger logger =  LoggerFactory.getLogger(CustomHttpServletRequest.class);
 
 	private final ByteArrayInputStream decryptedDataBAIS;
 
-	public HttpServletRequestWritableWrapper(HttpServletRequest request, byte[] decryptedData) {
+	public CustomHttpServletRequest(HttpServletRequest request, byte[] decryptedData) {
 		super(request);
 		decryptedDataBAIS = new ByteArrayInputStream(decryptedData);
 	}
@@ -59,31 +58,5 @@ public class HttpServletRequestWritableWrapper extends HttpServletRequestWrapper
 		return new BufferedReader(new InputStreamReader(decryptedDataBAIS, "UTF_8"));
 	}
 
-	@Override
-	public ServletInputStream getInputStream() throws IOException {
-		return new ServletInputStream() {
-			@Override
-			public int read() {
-				return decryptedDataBAIS.read();
-			}
 
-			@Override
-			public boolean isFinished() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean isReady() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void setReadListener(ReadListener listener) {
-				// TODO Auto-generated method stub
-
-			}
-		};
-	}
 }

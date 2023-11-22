@@ -1,4 +1,4 @@
-package com.myspring.safechannel.securityConfiguration.utils;
+package com.myspring.safechannel.httpcrypto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -7,11 +7,13 @@ import java.io.IOException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 
-public class FilterServletOutputStream extends ServletOutputStream {
+
+
+public class CustomServletOutputStream extends ServletOutputStream {
 
     private DataOutputStream stream;
 
-    public FilterServletOutputStream(ByteArrayOutputStream output) {
+    public CustomServletOutputStream(ByteArrayOutputStream output) {
         this.stream = new DataOutputStream(output);
     }
 
