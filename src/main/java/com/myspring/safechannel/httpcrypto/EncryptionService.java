@@ -46,7 +46,7 @@ public class EncryptionService {
 
 	public String decrypt(String strToDecrypt) {
 		try {
-
+			
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			cipher.init(Cipher.DECRYPT_MODE, loadAESKey(), iv);
 			return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));

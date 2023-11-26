@@ -2,7 +2,8 @@ package com.myspring.safechannel.httpcrypto;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -53,11 +54,12 @@ public class HttpCryptoFilter implements Filter {
 
 		ServletInputStream inputStream = null;
 
-		if (((HttpServletRequest) request).getRequestURL().toString().contains("/updatePicture")
-				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/uploadAttachment")
-				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api/v1/auth/")
+		if (
+//				((HttpServletRequest) request).getRequestURL().toString().contains("/api/v1/books/")		||
+		 ((HttpServletRequest) request).getRequestURL().toString().contains("/uploadAttachment")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("swagger")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/csrf")
+				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api/v1/aws/")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api-docs")) {
 			chain.doFilter(request, response);
 			return;
@@ -69,9 +71,15 @@ public class HttpCryptoFilter implements Filter {
 		try {
 
 			inputStream = request.getInputStream();
+			
 			requestData = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+			
+			logger.info("request Content {}", requestData);
 			if (!Strings.isEmpty(requestData)) {
-				decodeData = encryptionService.decrypt(requestData);
+				Map<String, Object> req = new ObjectMapper().readValue(requestData, HashMap.class);
+
+				decodeData = encryptionService.decrypt(req.get("body").toString());
+				logger.info("decoded req  Content {}", decodeData);
 			}
 			CustomHttpServletRequest requestWrapper = null;
 			if (!Strings.isEmpty(decodeData)) {

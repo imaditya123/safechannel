@@ -5,11 +5,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
+//import javax.servlet.ServletInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
+import io.jsonwebtoken.io.IOException;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 
@@ -56,6 +60,33 @@ public class CustomHttpServletRequest extends HttpServletRequestWrapper{
 	@Override
 	public BufferedReader getReader() throws UnsupportedEncodingException {
 		return new BufferedReader(new InputStreamReader(decryptedDataBAIS, "UTF_8"));
+	}
+	@Override
+	public ServletInputStream getInputStream() throws IOException {
+		return new ServletInputStream() {
+			@Override
+			public int read() {
+				return decryptedDataBAIS.read();
+			}
+
+			@Override
+			public boolean isFinished() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean isReady() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void setReadListener(ReadListener listener) {
+				// TODO Auto-generated method stub
+
+			}
+		};
 	}
 
 
