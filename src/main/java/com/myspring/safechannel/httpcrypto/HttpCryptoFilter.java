@@ -59,6 +59,7 @@ public class HttpCryptoFilter implements Filter {
 		 ((HttpServletRequest) request).getRequestURL().toString().contains("/uploadAttachment")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("swagger")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/csrf")
+				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api/v1/upload")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api/v1/aws/")
 				|| ((HttpServletRequest) request).getRequestURL().toString().contains("/api-docs")) {
 			chain.doFilter(request, response);

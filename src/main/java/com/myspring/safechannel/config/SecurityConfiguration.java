@@ -23,7 +23,7 @@ public class SecurityConfiguration {
 
 	private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**", "/api/v1/books/**", "/v2/api-docs",
 			"/v3/api-docs", "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
-			"/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/demo/**","/api/v1/aws/**" };
+			"/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/demo/**","/api/v1/aws/**","/api/v1/upload/**" };
 	private final JwtAuthenticationFilter jwtAuthFilter;
 	private final AuthenticationProvider authenticationProvider;
 	private final LogoutService logoutHandler;

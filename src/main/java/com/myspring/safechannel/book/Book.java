@@ -37,6 +37,7 @@ public class Book {
 	private Integer id;
 	private String author;
 	private String genre;
+	private String title;
 
 	private String coverImage;
 	private String description;
@@ -51,13 +52,12 @@ public class Book {
 	private String price;
 	private String purchaseLink;
 	private Boolean featured;
-	
+
 	private Boolean bestseller;
 	private String releaseDate;
-	
-	@Enumerated(EnumType.STRING) 
-	private AgeGroup ageGroup;
 
+	@Enumerated(EnumType.STRING)
+	private AgeGroup ageGroup;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)
@@ -71,38 +71,32 @@ public class Book {
 	@Column(nullable = false, updatable = false)
 	private String createdBy;
 
-	@LastModifiedBy 
+	@LastModifiedBy
 	@Column(insertable = false)
 	private String lastModifiedBy;
-	
+
 	@Transient
 	private String currentUser;
-	
-	@PrePersist
-    protected void onCreate() {
-        this.createDate = LocalDateTime.now();
-        this.createdBy = this.currentUser;
-    }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.lastModified = LocalDateTime.now();
-        this.lastModifiedBy = this.currentUser;
-    }
-    
-    public void setCurrentUser(String currentUser) {
-    	this.currentUser=currentUser;
-    }
-    
+	@PrePersist
+	protected void onCreate() {
+		this.createDate = LocalDateTime.now();
+		this.createdBy = this.currentUser;
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.lastModified = LocalDateTime.now();
+		this.lastModifiedBy = this.currentUser;
+	}
+
+	public void setCurrentUser(String currentUser) {
+		this.currentUser = currentUser;
+	}
+
 //    
 //    private Integer getCurrentUserId() {
 //        return 1; // Replace this with your logic
 //    }
-	
-	
 
-	
-	
 }
-
-
